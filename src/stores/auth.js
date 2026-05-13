@@ -5,7 +5,7 @@ import { setAuthTokenGetter, setUnauthorizedHandler } from '@/api/axios'
 
 // In-memory storage for access token
 const accessToken = ref(null)
-const user_id = ref(null) // Unified user_id (SSO UID)
+const user_id = ref(null) // SSO user UUID from JWT sub
 const refreshTimerId = ref(null)
 const isRefreshing = ref(false)
 let interceptorsInitialized = false
@@ -51,7 +51,8 @@ export function useAuthStore() {
     accessToken.value = token
     user_id.value = idValue
 
-    // Store user_id in localStorage for persistence
+    localStorage.removeItem('uid')
+    localStorage.removeItem('userId')
     if (idValue) {
       localStorage.setItem('user_id', idValue)
     }
@@ -95,15 +96,10 @@ export function useAuthStore() {
           const newToken = response.data.data.accessToken
           accessToken.value = newToken
 
-          // Restore user_id from localStorage if not already set
           if (!user_id.value) {
             const storedId = localStorage.getItem('user_id')
             if (storedId) {
               user_id.value = storedId
-            } else {
-              // Fallback for migration from old keys
-              const oldUid = localStorage.getItem('uid')
-              if (oldUid) user_id.value = oldUid
             }
           }
 
@@ -132,8 +128,7 @@ export function useAuthStore() {
 
   const initializeAuth = async () => {
     if (!accessToken.value) {
-      // Try to load user_id from localStorage
-      const storedId = localStorage.getItem('user_id') || localStorage.getItem('uid')
+      const storedId = localStorage.getItem('user_id')
       if (storedId) {
         user_id.value = storedId
       }
@@ -182,8 +177,7 @@ export function useAuthStore() {
       if (response.data.success) {
         const userData = response.data.data
         const token = userData.accessToken
-        // Use user_id from response (or uid, they are same now)
-        const idValue = userData.user?.user_id || userData.uid
+        const idValue = userData.uuid || userData.user?.user_id
 
         // Store auth data in memory
         setAuth(token, idValue)

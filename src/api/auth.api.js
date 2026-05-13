@@ -33,13 +33,10 @@ export const authApi = {
 
   /**
    * Get user profile
-   * @param {string|number} uid - User ID
    * @returns {Promise} Response with user profile data
    */
-  getUserProfile: (uid) => {
-    return apiClient.get('/api/user/profile', {
-      params: { uid },
-    })
+  getUserProfile: () => {
+    return apiClient.get('/api/user/profile')
   },
 }
 

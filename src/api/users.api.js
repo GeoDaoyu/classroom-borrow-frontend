@@ -7,13 +7,10 @@ import apiClient from './axios'
 export const usersApi = {
   /**
    * Get user profile
-   * @param {string|number} uid - User ID
    * @returns {Promise} Response with user profile data
    */
-  getProfile: (uid) => {
-    return apiClient.get('/users/profile', {
-      params: { uid },
-    })
+  getProfile: () => {
+    return apiClient.get('/users/profile')
   },
 }
 
