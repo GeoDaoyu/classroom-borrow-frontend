@@ -159,7 +159,20 @@ async function submitReason() {
 }
 
 // ---------- 核准申請 ----------
-async function approve(application) {
+const showApproveConfirm = ref(false)
+const pendingApproveItem = ref(null)
+
+function approve(application) {
+  if (application.status === '審核中') {
+    pendingApproveItem.value = application
+    showApproveConfirm.value = true
+    return
+  }
+  doApprove(application)
+}
+
+async function doApprove(application) {
+  showApproveConfirm.value = false
   try {
     await adminApi.updateBookingStatus(application.request_id, {
       status: 'approved',
@@ -305,6 +318,18 @@ function closeModal() {
       <p v-else class="empty-state">目前沒有已完成審核的資料</p>
     </section>
   </template>
+
+  <!-- 指導老師尚未審核確認彈窗 -->
+  <div v-if="showApproveConfirm" class="modalOverlay">
+    <div class="modal">
+      <h3>⚠️ 指導老師尚未同意</h3>
+      <p class="confirm-text">此申請的指導老師尚未完成簽核，確定要直接核准此申請嗎？</p>
+      <div class="modalButtons">
+        <button @click="doApprove(pendingApproveItem)">直接核准</button>
+        <button @click="showApproveConfirm = false">取消</button>
+      </div>
+    </div>
+  </div>
 
   <!-- 駁回 / 黑名單理由彈窗 -->
   <div v-if="showModal" class="modalOverlay">
@@ -681,6 +706,13 @@ button:last-child {
   margin-bottom: 15px;
   border-bottom: none;
   padding-bottom: 0;
+}
+
+.confirm-text {
+  font-size: 15px;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 5px;
 }
 
 .modal textarea {
