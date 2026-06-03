@@ -20,10 +20,9 @@ export function useUserStore() {
 
   // 獲取用戶資料
   const fetchUserProfile = async () => {
-    const userId = authStore.getUserId()
     const token = authStore.getAccessToken()
 
-    if (!userId || !token) {
+    if (!token) {
       userProfile.value = null
       return
     }
@@ -33,7 +32,7 @@ export function useUserStore() {
     try {
       isLoadingProfile.value = true
 
-      const response = await usersApi.getProfile(userId)
+      const response = await usersApi.getProfile()
 
       if (response.data.success && response.data.data) {
         userProfile.value = response.data.data

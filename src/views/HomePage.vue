@@ -97,6 +97,14 @@ onMounted(async () => {
 const formatDate = (date) => {
   return dayjs(date).format('YYYY-MM-DD')
 }
+
+const announcementsRef = ref(null)
+const notesRef = ref(null)
+
+function scrollDown() {
+  const target = announcementsRef.value ?? notesRef.value
+  target?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
 </script>
 
 <template>
@@ -115,12 +123,18 @@ const formatDate = (date) => {
       </button>
     </div>
 
+    <!-- 提示箭頭 -->
+    <div class="scroll-hint" @click="scrollDown">
+      <div class="chevron"></div>
+      <div class="chevron"></div>
+    </div>
+
     <div class="interval">
       <br />
     </div>
 
     <!-- 公告區塊 -->
-    <div v-if="announcements.length > 0" class="announcements-section">
+    <div v-if="announcements.length > 0" class="announcements-section" ref="announcementsRef">
       <h3>最新公告</h3>
       <hr />
       <div v-for="item in announcements" :key="item.announcement_id" class="announcement-item">
@@ -134,7 +148,7 @@ const formatDate = (date) => {
     </div>
 
     <br />
-    <h1>注意事項</h1>
+    <h1 ref="notesRef">注意事項</h1>
     <hr />
     <br />
     <!-- 規則 -->
@@ -224,6 +238,40 @@ button:hover {
 .copyright {
   font-size: 10px;
   opacity: 70%;
+}
+
+.scroll-hint {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  cursor: pointer;
+  animation: bounce 1.8s ease-in-out infinite;
+  opacity: 0.45;
+  transition: opacity 0.2s;
+}
+
+.scroll-hint:hover {
+  opacity: 0.75;
+}
+
+.chevron {
+  width: 18px;
+  height: 18px;
+  border-right: 2px solid #666;
+  border-bottom: 2px solid #666;
+  transform: rotate(45deg);
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(7px);
+  }
 }
 
 .announcements-section {

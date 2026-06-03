@@ -208,12 +208,15 @@ function goToBorrowPage(roomId) {
         <h3>{{ room.name }}</h3>
         <p><strong>位置：</strong>{{ room.location }}</p>
         <p><strong>設備：</strong>{{ room.equipment }}</p>
+        <!--
         <a
           v-if="!['G508 系圖書室', 'G312 會議室', 'G501 會議室'].includes(room.name)"
           :href="room.seatMap"
           download
           >下載教室座位表.pdf ⬇</a
         >
+        -->
+
         <button class="borrowBtn" @click="goToBorrowPage(room.id)">我要借用</button>
       </div>
     </div>
